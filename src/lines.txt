@@ -1,0 +1,4 @@
+Each line should follow the format x1, y1, z1, x2, y2, z2 which is just starting point, ending point.
+X is left to right, Y is down to up, Z is backward to forward.
+0, 0, 0 is the starting player point.
+Different lines should be on a newline, start below.
