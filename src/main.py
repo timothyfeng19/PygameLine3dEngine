@@ -2,32 +2,49 @@ import pygame # pyright: ignore[reportMissingImports]
 import math
 
 pygame.init()
-pygame.display.set_caption("Simple 3D Line Rendering w/ Movement using Pygame")
+pygame.display.set_caption("Simple 3D Line Rendering w/ Movement using Pygame WIP")
 screen = pygame.display.set_mode((1000, 800))
 clock = pygame.time.Clock()
 
-font = pygame.font.Font(None, 19)
-
+background = 'white'
+maincolor = 'black'
 pos_x = 500
 pos_y = 0
 pos_z = 400
 heading = 0
 move_mult = 10
 turn = 4
-rot_x = 0
-rot_y = 0
 zoom = 800
 
 def coords(x, y, z):
-    global pos_x, pos_y, rot_x, rot_y
+    # transformation stuff
+    # insert math sorcery here
 
-    temp_x = x * math.cos(rot_y) + (y * math.sin(rot_x) + z * math.cos(rot_x)) * math.sin(rot_y)
-    temp_y = y * math.cos(rot_x) - z * math.sin(rot_x)
-    temp_z = -x * math.sin(rot_y) + (y * math.sin(rot_x) + z * math.cos(rot_x)) * math.cos(rot_y)
-    
-    factor = zoom / (-temp_z - pos_z)
+    return x, z # for now
 
-    return (temp_x - pos_x) * factor, (temp_y - pos_y) * factor
+def draw(surface, start, end, color=maincolor):
+    pygame.draw.line(surface, color, start, end, 5)
+
+with open('src/lines.txt', 'r') as file:
+    linesraw = file.read().splitlines()
+    lines = []
+    excluded = [linesraw[0], linesraw[1], linesraw[2], linesraw[3], linesraw[4]] # I know this is a bad way to exclude lines but I'm lazy
+
+    for line in linesraw: # this is DEFINITELY a slow and overcomplicated way to seperate each line into a list element
+        if not line in excluded:
+            coord = []
+            num = ""
+
+            for i in range(len(line)):
+                if line[i] == " ":
+                    coord.append(int(num))
+                    num = ""
+                else:
+                    num += line[i]
+
+                if len(coord) == 3:
+                        lines.append(coord)
+                        coord = []
 
 while True:
     for event in pygame.event.get():
@@ -35,6 +52,7 @@ while True:
             pygame.quit()
     
     true_head = -heading * math.pi/180 + math.pi
+
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         pos_x += math.sin(true_head) * move_mult
@@ -53,9 +71,9 @@ while True:
     if keys[pygame.K_RIGHT]:
         heading += turn
 
-    screen.fill((0, 0, 0))
-    pygame.draw.circle(screen, (255, 255, 255), (pos_x, pos_z), 20)
-    text = font.render("FPS: " + str(round(clock.get_fps())), True, "white")
+    screen.fill(background)
+
+    text = pygame.font.Font(None, 19).render("FPS: " + str(round(clock.get_fps())), True, maincolor)
     screen.blit(text, (1, 1))
 
     clock.tick(60)
